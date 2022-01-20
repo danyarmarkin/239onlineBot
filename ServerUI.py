@@ -37,8 +37,8 @@ def update(root, tasks, users):
             if r == 0 and c == 0:
                 continue
             elif r == 0:
-                l = Label(root, text=f"  {tasks[c - 1].name}  ")
-                l.grid(row=r, column=c)
+                l = Label(root, text=f"{tasks[c - 1].name}")
+                l.grid(row=r, column=c, padx=7)
             elif c == 0:
                 l = Label(root, text=f"{u[r - 1][2]} {u[r - 1][1]}", height=1)
                 l.grid(row=r, column=c)
@@ -52,7 +52,7 @@ def update(root, tasks, users):
                     l["bg"] = "red"
                 elif user_id in task.users_have_question:
                     l["bg"] = "yellow"
-                l.grid(row=r, column=c)
+                l.grid(row=r, column=c, pady=2)
 
 
 if __name__ == "__main__":

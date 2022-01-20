@@ -31,6 +31,7 @@ if not users.exists():
     users.create()
 tasks = []
 
+
 def add_task(task: Task):
     global tasks
     tasks.append(task)
