@@ -21,6 +21,7 @@ class Task:
     users_have_no_solve = []
     name = ""
 
+
 root = None
 updater = Updater('1450184958:AAGNlCuHL3BmVjwGjluQz7R0LXF2lfHCdYY', use_context=True)
 events = dict()
@@ -29,14 +30,10 @@ users = database.UsersTable()
 if not users.exists():
     users.create()
 tasks = []
-names = ["1a", "1f", "5", "XIII.93г", "78.23.4", "78.23.5", "78.23.8"]
-for i in names:
-    t = Task()
-    t.name = i
-    t.users_have_solve = []
-    t.users_have_question = []
-    t.users_have_no_solve = []
-    tasks.append(t)
+
+def add_task(task: Task):
+    global tasks
+    tasks.append(task)
 
 
 def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
@@ -180,4 +177,3 @@ def start_bot(r):
     global root
     root = r
     updater.start_polling()
-
