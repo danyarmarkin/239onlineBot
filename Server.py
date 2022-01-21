@@ -13,6 +13,7 @@ import ServerUI
 
 class Event(Enum):
     REG = 1
+    PASS = 2
 
 
 class Task:
@@ -23,9 +24,13 @@ class Task:
 
 
 root = None
-updater = Updater('1450184958:AAGNlCuHL3BmVjwGjluQz7R0LXF2lfHCdYY', use_context=True)
+f = open('token.txt', "r")
+token = f.readline()
+updater = Updater(token, use_context=True)
+
 events = dict()
 selected_task = dict()
+
 users = database.UsersTable()
 if not users.exists():
     users.create()
@@ -64,8 +69,8 @@ def help(update: Update, context: CallbackContext):
 
 def reg(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
-    events[user_id] = Event.REG
-    update.message.reply_text("Введите Фамилию и Имя (Иванов Иван)")
+    events[user_id] = Event.PASS
+    update.message.reply_text("Введите пароль")
 
 
 def choose_task(update: Update, context: CallbackContext):
@@ -160,6 +165,14 @@ def text_analyze(update: Update, context: CallbackContext):
         surname, name = tuple(text.split())
         users.add(user_id, name, surname)
         update.message.reply_text(f"Вы зарегистрировались как {surname} {name}")
+    elif event == Event.PASS:
+        f = open("password.txt", "r")
+        if text == f.readline():
+            events[user_id] = Event.REG
+            update.message.reply_text("Введите Фамилию и Имя (Иванов Иван)")
+            return
+        else:
+            update.message.reply_text("неверный пароль")
     else:
         update.message.reply_text("Что-то на эльфийском")
     events[user_id] = None
