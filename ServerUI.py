@@ -45,6 +45,13 @@ def draw_grid(root, tasks, users):
             Separator(root, orient="horizontal").grid(row=2 * r + 1, column=2 * c, sticky="we")
 
 
+def draw_grid_for_new_user(root, tasks, users):
+    u = users.getLinesFromTable()
+    for i in range(len(tasks) + 1):
+        Separator(root, orient="vertical").grid(row=2 * len(u), column=2 * i + 1, sticky="ns")
+        Separator(root, orient="horizontal").grid(row=2 * len(u) + 1, column=2 *i, sticky="we")
+
+
 def update(root, tasks, users, content=True):
     u = users.getLinesFromTable()
     for i in root.winfo_children():

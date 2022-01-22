@@ -165,6 +165,7 @@ def text_analyze(update: Update, context: CallbackContext):
         surname, name = tuple(text.split())
         users.add(user_id, name, surname)
         update.message.reply_text(f"Вы зарегистрировались как {surname} {name}")
+        ServerUI.draw_grid_for_new_user(root, tasks, users)
     elif event == Event.PASS:
         f = open("password.txt", "r")
         if text == f.readline():
