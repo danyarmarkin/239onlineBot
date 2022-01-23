@@ -53,12 +53,13 @@ def build_menu(buttons, n_cols, header_buttons=None, footer_buttons=None):
 
 def start(update: Update, context: CallbackContext):
     update.message.reply_text(
-        "239 Online bot.\n/help для спракви")
+        "239 Online bot.\n/help для справки")
 
 
 def help(update: Update, context: CallbackContext):
     user = users.getUser(update.message.from_user.id)
     update.message.reply_text(f"""
+    Помощь
     Вы зарегестрированы как
     *{user[0]} {user[1]}*
     Команды
@@ -80,7 +81,7 @@ def choose_task(update: Update, context: CallbackContext):
     for task in tasks:
         button_list.append(InlineKeyboardButton(task.name, callback_data=task.name))
     markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=3))
-    update.message.reply_text("выберите задачу", reply_markup=markup)
+    update.message.reply_text("Выберите задачу", reply_markup=markup)
 
 
 def callback(update: Update, context: CallbackContext):
@@ -91,7 +92,7 @@ def callback(update: Update, context: CallbackContext):
     bot = context.bot
 
     tasks_names = [task.name for task in tasks]
-    actions = ["Я сделал", "У меня не получается", "Вопрос по условию"]
+    actions = ["Я сделал", "У меня не получается", "Вопрос по задаче"]
 
     if data in actions:
         task_name = selected_task.get(query.from_user.id, None)
@@ -147,7 +148,7 @@ def callback(update: Update, context: CallbackContext):
     bot.edit_message_text(
         chat_id=query.message.chat_id,
         message_id=query.message.message_id,
-        text=f"выберите действие по задаче {data}",
+        text=f"Выберите действие по задаче {data}",
         reply_markup=markup
     )
 
@@ -155,7 +156,9 @@ def callback(update: Update, context: CallbackContext):
 def text_analyze(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
     text = update.message.text
-    print(f"{user_id} {update.message.from_user.full_name} (registered = {users.haveUser(user_id)}): {text}")
+    registered = users.haveUser(user_id)
+    print(f"{user_id} {update.message.from_user.full_name} (registered = {registered}): {text}")
+
     try:
         event = events[user_id]
     except KeyError:
@@ -165,7 +168,8 @@ def text_analyze(update: Update, context: CallbackContext):
         surname, name = tuple(text.split())
         users.add(user_id, name, surname)
         update.message.reply_text(f"Вы зарегистрировались как {surname} {name}")
-        ServerUI.draw_grid_for_new_user(root, tasks, users)
+        if not registered:
+            ServerUI.prepare_for_new_user(root, tasks, users)
         ServerUI.update(root, tasks, users)
     elif event == Event.PASS:
         f = open("password.txt", "r")
@@ -174,7 +178,7 @@ def text_analyze(update: Update, context: CallbackContext):
             update.message.reply_text("Введите Фамилию и Имя (Иванов Иван)")
             return
         else:
-            update.message.reply_text("неверный пароль")
+            update.message.reply_text("Неверный пароль. Можете попробовать еще, нажав на /reg")
     else:
         update.message.reply_text("Что-то на эльфийском")
     events[user_id] = None
