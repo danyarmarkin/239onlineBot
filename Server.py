@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CallbackQueryHandler
 from telegram.ext.updater import Updater
@@ -8,7 +9,6 @@ from telegram.ext.messagehandler import MessageHandler
 from telegram.ext.filters import Filters
 from enum import Enum
 import database
-import ServerUI
 
 
 class Event(Enum):
@@ -22,6 +22,21 @@ class Task:
     users_have_no_solve = []
     name = ""
 
+
+class UpdateListener(ABC):
+    @abstractmethod
+    def update(self, tasks_list, users_db):
+        pass
+
+
+class NewUserListener(ABC):
+    @abstractmethod
+    def update(self, tasks_list, users_db):
+        pass
+
+
+update_listeners = []
+new_user_listeners = []
 
 root = None
 f = open('token.txt', "r")
@@ -60,7 +75,7 @@ def help(update: Update, context: CallbackContext):
     user = users.getUser(update.message.from_user.id)
     update.message.reply_text(f"""
     Помощь
-    Вы зарегестрированы как
+    Вы зарегистрированы как
     *{user[0]} {user[1]}*
     Команды
     /reg - зарегистрироваться
@@ -131,7 +146,8 @@ def callback(update: Update, context: CallbackContext):
             parse_mode="markdown"
         )
         query.answer()
-        ServerUI.update(root, tasks, users)
+        for i in update_listeners:
+            i.update(tasks, users)
         return
 
     if data not in tasks_names:
@@ -169,8 +185,10 @@ def text_analyze(update: Update, context: CallbackContext):
         users.add(user_id, name, surname)
         update.message.reply_text(f"Вы зарегистрировались как {surname} {name}")
         if not registered:
-            ServerUI.prepare_for_new_user(root, tasks, users)
-        ServerUI.update(root, tasks, users)
+            for i in new_user_listeners:
+                i.update(tasks, users)
+        for i in update_listeners:
+            i.update(tasks, users)
     elif event == Event.PASS:
         f = open("password.txt", "r")
         if text == f.readline():
