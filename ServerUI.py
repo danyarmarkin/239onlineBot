@@ -117,7 +117,7 @@ def prepare_for_new_user(root_element: ActivityRoot):
 
 
 def update(root_element: ActivityRoot, content=True):
-    root_element.add_button.destroy()
+
     u = root_element.users.getLinesFromTable()
     tasks = root_element.tasks
     for r in range(len(u) + 1):
@@ -141,6 +141,7 @@ def update(root_element: ActivityRoot, content=True):
                 elif user_id in task.users_have_question:
                     col = "yellow"
                 root_element.labels[r][c]["bg"] = col
+    root_element.add_button.destroy()
     add = Button(root_element, text="+", command=partial(prepare_for_new_task, root_element))
     add.grid(row=0, column=len(tasks) * 2 + 3)
     root_element.add_button = add
